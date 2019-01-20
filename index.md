@@ -1,4 +1,4 @@
-## [Home](./index.html) [Research](./research.html) [TryBandits](./TryBandits.html) [Contact](./research.html)
+## [Home](./index.html) &emsp; [Research](./research.html) &emsp; [TryBandits](./TryBandits.html) &emsp; [Contact](./research.html)
 
 ---
 
