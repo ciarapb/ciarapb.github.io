@@ -1,4 +1,2 @@
-## Ciara Pike-Burke
-
-[Research](./research.html) [TryBandits](./TryBandits.html) [Contact](./research.html)
+## [Research](./research.html) [TryBandits](./TryBandits.html) [Contact](./research.html)
 
