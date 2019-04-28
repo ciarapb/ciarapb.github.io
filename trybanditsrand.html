@@ -1,0 +1,210 @@
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <head>
+      <style type="text/css">
+      
+        .bar{
+          font: 12px sans-serif;
+          text-align: right;
+          padding: 3px;
+          margin: 1px;
+          color: white;
+        }
+        
+        path {
+            stroke-width: 3;
+            fill: none;
+        }
+         
+        line {
+            stroke: black;
+        }
+         
+        text {
+            font-family: Computer Modern, Arial;
+            font-size: 11pt;
+        }
+
+        td { text-align:center; vertical-align:middle;}
+        
+        button{
+            margin: 6px;
+            width:70px;
+            }
+        button:hover{
+            cursor: pointer;
+            }
+       .clearfix:after {
+           content: "";
+           display: table;
+           clear: both;
+        }
+
+        .right {
+            float: right;
+        }​
+
+        #messagebox {
+            text-align : center;
+        }
+       
+       /* The Modal (background) */
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+      }
+
+      /* Modal Content */
+      .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 60%;
+      }
+
+      /* The Close Button */
+      .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      </style>
+    </head>
+    
+  
+      <body onload="setseed()"></body>
+
+      <button id="myBtn" style="height:30px;width:100px;">Instructions</button>
+      <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Instructions:</h2>
+          <p>You have 100 plays to maximize your reward.</p>
+          <p>At each play, select an arm to play and receive a reward of 0 or 1.</p>
+          <p>To help your decision, you have access to the following information:</p>
+          <ul>
+            <li>Rewards: The total reward from each arm</li>
+            <li>Plays: The total number of times you have played each arm</li>
+            <li>Estimated Probs: total reward/total plays, the estimated success probabilities of each arm</li>
+            <li>UCBs: The UCB of each arm (according to Auer et al. 2002)</li>
+          </ul>
+          <p>Note that the 'Show UCBs' box needs to be checked in order for the UCBs to be shown and updated.</p>
+        </div>
+      </div>
+
+
+      <div id="buttons" style="width: 110px;" align="center">
+            <form style="display:inline;">
+                <input type="checkbox" id="c1" onclick="addUCBS('mytable')">Show UCBs
+            </form>
+      </div>
+
+      <div style="margin: auto;width: 100px; float: center"> 
+          <table style="font-size: 30px">
+            <tr>
+              <td style="font-size: 25px;">Total Reward</td>
+              <td style="font-size: 25px;">Total Plays</td>
+            </tr>
+            <tr>
+              <td id="totalreward">0</td>
+              <td id="totalplays">0</td>
+            </tr>
+          </table>
+      </div>
+
+      <p></p>
+      <p></p>
+
+      <div id="result" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content" align="center">
+          <p>Congratulations!</p>
+          <p>After <span id="finalplays"></span> plays, your reward was <span id="finalreward"></span>. </p>
+          <p>The true probabilities are <span id="probs"></span>. </p>
+        </div>
+      </div>
+        
+        <!--<div id="reveal-div" style="margin:20px auto; width: 300px; display:none"></div>-->
+      
+
+       <table id="mytable" style="font-size: 20px; margin:auto auto;" align="center">
+         <tr>
+            <td></td>
+            <td><img src="bandits3.png" style="width:100px;height:150px;"></td>
+            <td><img src="bandits3.png" style="width:100px;height:150px;"></td>
+            <td><img src="bandits3.png" style="width:100px;height:150px;"></td>
+            <td><img src="bandits3.png" style="width:100px;height:150px;"></td>
+            <td><img src="bandits3.png" style="width:100px;height:150px;"></td>
+         </tr>
+         <tr>
+           <td style="color:white; font-size:40px">A</td>
+           <td style="text-align: center; color: gold; font-size:40px" id="inst1"> </td>
+           <td id="inst2" style="color: gold; font-size:40px"> </td>
+           <td id="inst3" style="color: gold; font-size:40px"> </td>
+           <td id="inst4" style="color: gold; font-size:40px"> </td>
+           <td id="inst5" style="color: gold; font-size:40px"> </td>
+         </tr>
+         <tr>
+           <td></td>
+           <td><button id="button1" style="width:100px;" onClick = "update_arm(0)"> Arm 1</button></td>
+           <td><button id="button2" style="width:100px;" onClick = "update_arm(1)"> Arm 2</button></td>
+           <td><button id="button3" style="width:100px;" onClick = "update_arm(2)"> Arm 3</button></td>
+           <td><button id="button4" style="width:100px;" onClick = "update_arm(3)"> Arm 4</button></td>
+           <td><button id="button5" style="width:100px;" onClick = "update_arm(4)"> Arm 5</button></td>
+         </tr>
+         <tr>
+           <th>Rewards: </th>
+           <td style="text-align: center" id="reward1">0</td>
+           <td id="reward2">0</td>
+           <td id="reward3">0</td>
+           <td id="reward4">0</td>
+           <td id="reward5">0</td>
+         </tr>
+         <tr>
+           <th>Pulls: </th>
+           <td id="pulls1">0</td>
+           <td id="pulls2">0</td>
+           <td id="pulls3">0</td>
+           <td id="pulls4">0</td>
+           <td id="pulls5">0</td>
+         </tr>
+         <tr>
+           <th>Estimated Probs: </th>
+           <td id="mean1">0</td>
+           <td id="mean2">0</td>
+           <td id="mean3">0</td>
+           <td id="mean4">0</td>
+           <td id="mean5">0</td>
+         </tr>
+         <!-- <tr>
+           <th>UCBs: </th>
+           <td id="ucb1">0</td>
+           <td id="ucb2">0</td>
+           <td id="ucb3">0</td>
+           <td id="ucb4">0</td>
+           <td id="ucb5">0</td>
+         </tr> -->
+       </table>
+            
+   
+
+<script type="text/javascript" src="d3banditsrand.js"></script>
+<script type="text/javascript" src="seedrandom.js"></script>
